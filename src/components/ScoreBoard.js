@@ -18,28 +18,29 @@ const UserNames = [
   "Rasputin",
   "Jason"
 ]
-
+// http://localhost:8000/scores
 
 const ScoreBoard = ({ score }) => {
   const [gameStates, setGameStates] = useState(null);
   const [userName, setUserName] = useState(null);
-
+  // https://arcade-backend.onrender.com/scoreboard/flappy
   const fetchData = async () => {
-    const response = await axios.get('http://localhost:8000/scores')
-    const data = Object.keys(response.data.data).map(item => response.data.data[item])
+    const response = await axios.get('https://arcade-backend.onrender.com/scoreboard/flappy')
+    console.log(response.data)
+    const data = Object.keys(response.data).map(item => response.data[item])
     setGameStates(data)
   }
-
+  // 
   console.log(gameStates)
 
   const saveData = () => {
 
     const data = {
-      username: userName,
+      name: userName,
       score: score
     }
-
-    axios.post('http://localhost:8000/addscore', data)
+    // 'http://localhost:8000/addscore'
+    axios.post('https://arcade-backend.onrender.com/scoreboard/flappy/add', data)
       .then(response => console.log(response))
       .catch(err => {console.log(err)})
       .then(fetchData)
@@ -51,6 +52,7 @@ const ScoreBoard = ({ score }) => {
   }, []);
 
     const descendingGameStates = gameStates?.sort((a, b) => b.score - a.score)
+    const topTenGameStates = descendingGameStates?.slice(0, 10)
     console.log(userName)
 
   return (
@@ -58,14 +60,14 @@ const ScoreBoard = ({ score }) => {
       <h2>Name: {userName} Score: {score}</h2>
 
       <h2>High Scores:</h2>
-      {descendingGameStates?.map((gameState, index) => (
+      {topTenGameStates?.map((gameState, index) => (
         <div key={index}>
-          <h3>{gameState.username}: {gameState.score}</h3>
+          <h3>{gameState.name}: {gameState.score}</h3>
         </div>
       ))}
 
 
-      <button onClick={saveData}>SAVE SCORE</button>
+      <button onClick={saveData}>Submit Name & Score</button>
     </div>
   )
 }
