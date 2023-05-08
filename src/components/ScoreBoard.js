@@ -1,40 +1,20 @@
 import axios from "axios";
 import {useEffect, useState} from "react";
-
-//figure out a way to handle user name inputs here:
-
-const UserNames = [
-  "Anthony", 
-  "Tarndeep",
-  "Matthew",
-  "PurpleFish",
-  "SillySloth",
-  "Malcolm-X",
-  "Bill",
-  "Lisa",
-  "Reggie",
-  "Ronald",
-  "Charles3",
-  "Rasputin",
-  "Jason"
-]
-// http://localhost:8000/scores
+import "../scoreboard.css"
 
 const ScoreBoard = ({ score }) => {
   const [gameStates, setGameStates] = useState(null);
-  const [userName, setUserName] = useState(null);
-  // https://arcade-backend.onrender.com/scoreboard/flappy
+  const [userName, setUserName] = useState("");
+  
   const fetchData = async () => {
     const response = await axios.get('https://arcade-backend.onrender.com/scoreboard/flappy')
     console.log(response.data)
     const data = Object.keys(response.data).map(item => response.data[item])
     setGameStates(data)
   }
-  // 
   console.log(gameStates)
 
   const saveData = () => {
-
     const data = {
       name: userName,
       score: score
@@ -46,10 +26,7 @@ const ScoreBoard = ({ score }) => {
       .then(fetchData)
   }
 
-  useEffect(() => {
-    fetchData()
-    setUserName(UserNames[Math.floor(Math.random() * UserNames.length)])
-  }, []);
+  useEffect(() => {fetchData()}, []);
 
     const descendingGameStates = gameStates?.sort((a, b) => b.score - a.score)
     const topTenGameStates = descendingGameStates?.slice(0, 10)
@@ -57,17 +34,25 @@ const ScoreBoard = ({ score }) => {
 
   return (
     <div className="score-board">
-      <h2>Name: {userName} Score: {score}</h2>
+      <h2>Player Name:</h2>
+      <input
+        type="text"
+        id="name-input"
+        placeholder="Enter your name"
+        value={userName}
+        onChange={(event) => setUserName(event.target.value)}
+        />
+      <h2>Score: {score} </h2>
 
-      <h2>High Scores:</h2>
+      <h3>High Scores: </h3>
+
       {topTenGameStates?.map((gameState, index) => (
-        <div key={index}>
-          <h3>{gameState.name}: {gameState.score}</h3>
+        <div class="top-ten-scores" key={index}>
+          <h4>{gameState.name}: {gameState.score}</h4>
         </div>
       ))}
 
-
-      <button onClick={saveData}>Submit Name & Score</button>
+      <button onClick={saveData}>Submit Score</button>
     </div>
   )
 }
